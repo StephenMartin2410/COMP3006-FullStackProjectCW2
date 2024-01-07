@@ -22,6 +22,7 @@ async function startup(){
         function(value){
             getBooks();
             getUsers();
+            getLogins();
         }
     );
 }
@@ -37,7 +38,7 @@ async function getUsers(){
     console.log(userCollection);
     return userCollection;
 }
-async function getUsers(){
+async function getLogins(){
     loginModel = mongoose.model("logins", loginSchema);
     loginCollection = await loginModel.find();
     console.log(loginCollection);
@@ -56,8 +57,11 @@ let socket = 3000;
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '/login.html'));
   });
-  app.get('/loggedin', function(req, res) {
+  app.get('/userloggedin', function(req, res) {
     res.sendFile(path.join(__dirname, '/index.html'));
+  });
+  app.get('/adminloggedin', function(req, res) {
+    res.sendFile(path.join(__dirname, '/adminindex.html'));
   });
   app.listen(9000);
 
@@ -83,7 +87,7 @@ websocket.on('connection', ws => {
         let loginFound = 0;
 
         loginCollection.forEach(user=> {
-            console.log("server:" + user.UserName + user.Password);
+            //console.log("server:" + user.UserName + user.Password);
             if(parseData.username == user.UserName && parseData.password == user.Password){
                 loginFound = 1;
             }
@@ -91,7 +95,7 @@ websocket.on('connection', ws => {
 
         for(let i = 0; i <= connectedUsers.length; i++){
             console.log("Array = " + connectedUsers);
-            console.log("connectedUser          " + connectedUsers[i]);
+            //console.log("connectedUser          " + connectedUsers[i]);
             if(parseData.username == connectedUsers[i]){
                 loginFound = 0;
             }

@@ -13,6 +13,12 @@
             if(parsedData.loginFound == 1){
                 console.log("login success!");
                 sessionStorage.setItem("user", parsedData.usernameInput);
+                if(parsedData.usernameInput == "admin"){
+                    window.location.href="/adminloggedin";
+                }
+                else{
+                    window.location.href="/userloggedin"
+                }
             }
             else{
                 console.log("login fail");
