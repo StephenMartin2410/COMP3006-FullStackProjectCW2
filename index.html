@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<head>
+    <title>COMP3006-CW2</title>
+    <script>
+
+        sessionStorage.getItem("user");
+
+        let socket = io("http://localhost:9000");
+        console.log("socket: " + socket);
+        socket.on("server message", function(msg) {
+        console.log("Rec'd from server: '" + msg + "'");
+        socket.emit("client message", "Acknowledging your message");
+        console.log("Emitted message");
+        });
+    </script>
+</head>
+
+<body>    
+</body>
+</html>

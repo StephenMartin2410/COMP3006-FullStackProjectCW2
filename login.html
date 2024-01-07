@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<head>
+    <title>Login</title>
+    <script>
+        let ownUsername = null;
+
+        const socket = new WebSocket("ws://localhost:3000/");
+        socket.onmessage = (event) => {
+            console.log(event.data);
+
+            let parsedData = JSON.parse(event.data);
+
+            if(parsedData.loginFound == 1){
+                console.log("login success!");
+                sessionStorage.setItem("user", parsedData.usernameInput);
+            }
+            else{
+                console.log("login fail");
+            }
+        }
+        function sendMessage(){
+            let usernameField = document.getElementById("Username");
+            let userInput = usernameField.value;
+            let passwordField = document.getElementById("Password");
+            let passInput = passwordField.value;
+
+            let responseObj = {
+                username: userInput,
+                password: passInput
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+    </script>
+</head>
+<body>
+    <label>Username</label>
+    <input type="text" id="Username">
+    <label>Password</label>
+    <input type="password" id="Password">
+    <button id="Login" onclick="sendMessage()">Login</button>
+</body>
+</html>
