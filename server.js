@@ -76,44 +76,63 @@ websocket.on('connection', ws => {
     console.log("Client Connected")
     ws.binaryType = "arraybuffer";
     ws.binaryType = "blob";
-    ws.on('close', () => console.log("Client Disconnected"))
+    ws.on('close', () => {
+
+        console.log("Client Disconnected");
+        connectedUsers = [];
+        websocket.clients.forEach(client =>{
+            let response = "marco";
+            client.send((response));
+        })
+    
+    
+    })
     ws.onmessage = function(event){
         parseData = JSON.parse(event.data);
-        console.log(parseData);
-        console.log("username = " + parseData.username);
-        console.log("password = " + parseData.password);
-        let id = parseData.id;
-        
-        let loginFound = 0;
 
-        loginCollection.forEach(user=> {
-            //console.log("server:" + user.UserName + user.Password);
-            if(parseData.username == user.UserName && parseData.password == user.Password){
-                loginFound = 1;
-            }
-        })
+        if(parseData.type == "login"){
+            console.log(parseData);
+            console.log("username = " + parseData.username);
+            console.log("password = " + parseData.password);
+            let id = parseData.id;
+            
+            let loginFound = 0;
 
-        for(let i = 0; i <= connectedUsers.length; i++){
-            console.log("Array = " + connectedUsers);
-            //console.log("connectedUser          " + connectedUsers[i]);
-            if(parseData.username == connectedUsers[i]){
-                loginFound = 0;
-            }
-        }
+            loginCollection.forEach(user=> {
+                //console.log("server:" + user.UserName + user.Password);
+                if(parseData.username == user.UserName && parseData.password == user.Password){
+                    loginFound = 1;
+                }
+            })
+            
+            for(let i = 0; i <= connectedUsers.length; i++){
+                if(parseData.username == connectedUsers[i]){
+                    loginFound = 0;
+                }
+            } 
 
-        websocket.clients.forEach(client =>{
+
             let response={
-                loginFound: loginFound,
-                usernameInput : parseData.username,
-                id: id
+                    loginFound: loginFound,
+                    usernameInput : parseData.username,
+                    id: id
             }
 
-            if(loginFound){
+
+            websocket.clients.forEach(client =>{
+                client.send(JSON.stringify(response));
+            });
+
+            if(loginFound == 1){
                 connectedUsers.push(parseData.username);
-                console.log(connectedUsers);
+
+                console.log("Array = " + connectedUsers);
             }
 
-            client.send(JSON.stringify(response));
-        })
+        }
+        else if(parseData.type == "polo"){
+            console.log("logging " + parseData.username);
+            connectedUsers.push(parseData.username);
+        }
     }
 })

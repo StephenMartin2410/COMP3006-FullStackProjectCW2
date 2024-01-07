@@ -2,26 +2,52 @@
 <head>
     <title>Login</title>
     <script>
-        let ownUsername = null;
-
+        sessionStorage.clear();
+        let ownUsername = "null";
+        let tempUsername = "null";
         const socket = new WebSocket("ws://localhost:3000/");
         socket.onmessage = (event) => {
             console.log(event.data);
+            if (event.data == "marco"){
+                if(ownUsername != "null"){
 
-            let parsedData = JSON.parse(event.data);
+                    let responseObj = {
+                        type: "polo",
+                        username: ownUsername
+                    }
 
-            if(parsedData.loginFound == 1){
-                console.log("login success!");
-                sessionStorage.setItem("user", parsedData.usernameInput);
-                if(parsedData.usernameInput == "admin"){
-                    window.location.href="/adminloggedin";
-                }
-                else{
-                    window.location.href="/userloggedin"
+                    let stringify = JSON.stringify(responseObj);
+                    console.log("polo");
+                    socket.send(stringify);
                 }
             }
             else{
-                console.log("login fail");
+                let parsedData = JSON.parse(event.data);
+                if(parsedData.usernameInput == tempUsername){                  
+                    if(parsedData.loginFound == 1){
+                        console.log("login success!");
+                        ownUsername = tempUsername;
+                        sessionStorage.setItem("user", parsedData.usernameInput);
+                        let logindiv = document.getElementById("Login");
+                        if(parsedData.usernameInput == "admin"){
+                            let admindiv = document.getElementById("Admin");
+                            logindiv.style.visibility = "hidden";
+                            logindiv.style.display = "none";
+                            admindiv.style.visibility = "visible";
+                            admindiv.style.display = "block";
+                        }
+                        else{
+                            let userdiv = document.getElementById("User");
+                            logindiv.style.visibility = "hidden";
+                            logindiv.style.display = "none";
+                            userdiv.style.visibility = "visible";
+                            userdiv.style.display = "block";
+                        }
+                    }
+                    else{
+                        console.log("login fail");
+                    }
+                }
             }
         }
         function sendMessage(){
@@ -29,8 +55,10 @@
             let userInput = usernameField.value;
             let passwordField = document.getElementById("Password");
             let passInput = passwordField.value;
+            tempUsername = userInput;
 
             let responseObj = {
+                type:"login",
                 username: userInput,
                 password: passInput
             }
@@ -41,10 +69,25 @@
     </script>
 </head>
 <body>
+    <div id="Login">
+    <h1>Login</h1>
     <label>Username</label>
     <input type="text" id="Username">
     <label>Password</label>
     <input type="password" id="Password">
     <button id="Login" onclick="sendMessage()">Login</button>
+    </div>
+
+    <div id="Admin" style="visibility: hidden; display: none;">
+        <h1>Admin</h1>
+
+
+    </div>
+
+    <div id="User" style="visibility: hidden; display: none;">
+        <h1>User</h1>
+
+
+    </div>
 </body>
 </html>
