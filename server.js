@@ -257,10 +257,57 @@ websocket.on('connection', ws => {
     }
 })
 async function refresh(){
-    getBooks();
-    getUsers();
-    getLogins();
+    await getBooks();
+    await getUsers();
+    await getLogins();
 }
+
+
+async function removeUser(){
+    await userModel.findOneAndDelete({UserName : "SuiteTestName"},function(err,docs){
+        if(err){
+            console.log(err);
+        }
+        else{
+            console.log("Deleted User : " + docs);
+        }
+    });
+};
+
+
+let userFound = 0;
+let name = "SuiteTestName";
+
+async function testAddUser(){
+    
+    
+    console.log("Creating User");
+    let createname = await createUser(name)
+
+    console.log("Refreshing");
+    
+    let response = await refresh();
+
+    await checkAddUser();
+
+    return(userFound);
+}
+
+async function searchForUser(){
+    userCollection.forEach(element => {
+        if(element.UserName == name){
+            userFound = 1;
+        }
+    })
+}
+
+async function checkAddUser(){
+    let response = await searchForUser()
+    return (userFound);
+
+}
+
+
 function closeServer(){
     websocket.close();
     server.close(()=>{
@@ -269,3 +316,5 @@ function closeServer(){
 }
 module.exports.app = app;
 module.exports.closeServer = closeServer;
+module.exports.testAddUser = testAddUser;
+module.exports.removeUser = removeUser;

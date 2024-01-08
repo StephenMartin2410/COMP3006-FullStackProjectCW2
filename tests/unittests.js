@@ -28,7 +28,11 @@ suite("A suite", function() {
          chai.assert.equal(response.status, 200)
         })
      });
+     test("Test logins GET /logins", function() {
+        return Promise.resolve(server.testAddUser()).should.eventually.equal(1);
+     });
      suiteTeardown(function(){
+        server.removeUser();
         server.closeServer();
      })
   });

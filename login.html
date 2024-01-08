@@ -149,10 +149,41 @@
             });
         }
         function loanBook(){
+            let editIdEl = document.getElementById("DisplayUserBooks");
+            let idInp = editIdEl.value;
+
+
+            let bookName = editIdEl.options[editIdEl.selectedIndex].text;
+            console.log(bookName);
+
+            let responseObj = {
+                type:"editBook",
+                id : idInp,
+                loan : "on",
+                name : bookName
+            }
+
+            let stringify = JSON.stringify(responseObj);
             
+            console.log(responseObj);
+            socket.send(stringify);
         }
         function unLoan(){
-            
+            let editIdEl = document.getElementById("DisplayUserBooksLoaned");
+            let idInp = editIdEl.value;
+
+            let loanVal = false;
+            let bookName = editIdEl.options[editIdEl.selectedIndex].text;
+            console.log(bookName);
+            let responseObj = {
+                type:"editBook",
+                id : idInp,
+                loan : "off",
+                name : bookName
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
         }
         function CreateLoginsSelection(data){
             var CreatedLogins = document.getElementById("CreatedLogins");
