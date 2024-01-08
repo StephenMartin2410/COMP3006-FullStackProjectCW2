@@ -76,6 +76,16 @@
             .then(res => res.json())
             .then(data=>CreateBooksSelection(data))
         }
+        function CreateUserBooksList(){
+            fetch('http://localhost:9000/books')
+            .then(res => res.json())
+            .then(data=>CreateBooksUserSelection(data))
+        }
+        function CreateLoanedBooksList(){
+            fetch('http://localhost:9000/books')
+            .then(res => res.json())
+            .then(data=>CreateLoanedBooksSelection(data))
+        }
         function CreateLoginsList(){
             fetch('http://localhost:9000/logins')
             .then(res => res.json())
@@ -108,6 +118,42 @@
                 CreatedBooks.appendChild(option);
             });
         }
+        function CreateBooksUserSelection(data){
+            var CreatedUserBooks = document.getElementById("DisplayUserBooks");
+            var option = document.createElement("option");
+            option.value = "0";
+            option.text = "Select An Option";
+            CreatedUserBooks.appendChild(option);
+            data.forEach(element => {
+                if(element.Loaned == false){
+                    var option = document.createElement("option");
+                    option.value = element._id;
+                    option.text = element.BookName;
+                    CreatedUserBooks.appendChild(option);
+                }
+            });
+        }
+        function CreateLoanedBooksSelection(data){
+            var CreatedUserBooks = document.getElementById("DisplayUserBooksLoaned");
+            var option = document.createElement("option");
+            option.value = "0";
+            option.text = "Select An Option";
+            CreatedUserBooks.appendChild(option);
+            data.forEach(element => {
+                if(element.Loaned == true){
+                    var option = document.createElement("option");
+                    option.value = element._id;
+                    option.text = element.BookName;
+                    CreatedUserBooks.appendChild(option);
+                }
+            });
+        }
+        function loanBook(){
+            
+        }
+        function unLoan(){
+            
+        }
         function CreateLoginsSelection(data){
             var CreatedLogins = document.getElementById("CreatedLogins");
             var option = document.createElement("option");
@@ -139,6 +185,8 @@
             CreateUserList();
             CreateBooksList();
             CreateLoginsList();
+            CreateUserBooksList();
+            CreateLoanedBooksList();
         }
         function addBook(){
             let addBookElem = document.getElementById("AddTextBooks");
@@ -351,7 +399,18 @@
 
     <div id="User" style="visibility: hidden; display: none;">
         <h1>User</h1>
+        <h2>Available Books: </h2>
+        <select id="DisplayUserBooks">
 
+        </select>
+        <button id="LoanBook" onclick="loanBook()">Loan</button>
+        <br><br>
+        <h2>Your Loaned Books: </h2>
+        <select id="DisplayUserBooksLoaned">
+
+        </select>
+        <button id="UnloanBook" onclick="unLoan()">Unloan</button>
+        <br><br>
 
     </div>
 </body>

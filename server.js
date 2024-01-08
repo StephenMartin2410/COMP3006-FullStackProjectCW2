@@ -182,7 +182,7 @@ websocket.on('connection', ws => {
     ws.onmessage = function(event){
         parseData = JSON.parse(event.data);
         console.log("parsed Data @" + event.data)
-
+        refresh();
         if(parseData.type == "login"){
             console.log(parseData);
             console.log("username = " + parseData.username);
@@ -256,6 +256,11 @@ websocket.on('connection', ws => {
         }
     }
 })
+async function refresh(){
+    getBooks();
+    getUsers();
+    getLogins();
+}
 function closeServer(){
     websocket.close();
     server.close(()=>{
