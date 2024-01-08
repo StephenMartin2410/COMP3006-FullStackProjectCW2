@@ -7,20 +7,6 @@ var done = chai.done;
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 suite("A suite", function() {
-    suiteSetup(function() {
-       // Prepare something once for all
-       // tests
-    });
-    suiteTeardown(function() {
-       // Clean up once after all tests.
-    });
-    setup(function() {
-       // Prepare something before each   
-       // test.
-    });
-    teardown(function() {
-       // Clean up after each test.
-    });
     test("A test", function() {
        // Test code here…
     });
