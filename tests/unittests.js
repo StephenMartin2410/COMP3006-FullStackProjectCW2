@@ -7,8 +7,12 @@ var done = chai.done;
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 suite("A suite", function() {
-    test("A test", function() {
-       
+    test("Test books GET /books", function() {
+       let app = server.app;
+       chai.request(app).get("/books")
+       .end(function(error, response){
+        chai.assert.equal(response.status, 200)
+       })
     });
     test("B test", function() {
         
