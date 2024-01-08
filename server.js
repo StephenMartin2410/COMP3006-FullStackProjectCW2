@@ -136,3 +136,9 @@ websocket.on('connection', ws => {
         }
     }
 })
+function closeServer(){
+    websocket.close();
+    server.close(()=>{
+        process.exit(0);
+    })
+}
