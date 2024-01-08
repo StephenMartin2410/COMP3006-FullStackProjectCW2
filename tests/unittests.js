@@ -14,11 +14,19 @@ suite("A suite", function() {
         chai.assert.equal(response.status, 200)
        })
     });
-    test("B test", function() {
-        
+    test("Test users GET /users", function() {
+        let app = server.app;
+        chai.request(app).get("/users")
+        .end(function(error, response){
+         chai.assert.equal(response.status, 200)
+        })
      });
-     test("C test", function() {
-        
+     test("Test logins GET /logins", function() {
+        let app = server.app;
+        chai.request(app).get("/logins")
+        .end(function(error, response){
+         chai.assert.equal(response.status, 200)
+        })
      });
      suiteTeardown(function(){
         server.closeServer();
