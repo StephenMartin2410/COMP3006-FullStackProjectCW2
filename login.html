@@ -66,9 +66,226 @@
             let stringify = JSON.stringify(responseObj);
             socket.send(stringify);
         }
+        function CreateUserList(){
+            fetch('http://localhost:9000/users')
+            .then(res => res.json())
+            .then(data=>CreateUserSelection(data))
+        }
+        function CreateBooksList(){
+            fetch('http://localhost:9000/books')
+            .then(res => res.json())
+            .then(data=>CreateBooksSelection(data))
+        }
+        function CreateLoginsList(){
+            fetch('http://localhost:9000/logins')
+            .then(res => res.json())
+            .then(data=>CreateLoginsSelection(data))
+        }
+
+        function CreateUserSelection(data){
+            var CreatedUsers = document.getElementById("CreatedUsers");
+            var option = document.createElement("option");
+            option.value = "0";
+            option.text = "Select An Option";
+            CreatedUsers.appendChild(option);
+            data.forEach(element => {
+                var option = document.createElement("option");
+                option.value = element._id;
+                option.text = element.UserName;
+                CreatedUsers.appendChild(option);
+            });
+        }
+        function CreateBooksSelection(data){
+            var CreatedBooks = document.getElementById("CreatedBooks");
+            var option = document.createElement("option");
+            option.value = "0";
+            option.text = "Select An Option";
+            CreatedBooks.appendChild(option);
+            data.forEach(element => {
+                var option = document.createElement("option");
+                option.value = element._id;
+                option.text = element.BookName;
+                CreatedBooks.appendChild(option);
+            });
+        }
+        function CreateLoginsSelection(data){
+            var CreatedLogins = document.getElementById("CreatedLogins");
+            var option = document.createElement("option");
+            option.value = "0";
+            option.text = "Select An Option";
+            CreatedLogins.appendChild(option);
+            data.forEach(element => {
+                var option = document.createElement("option");
+                option.value = element._id;
+                option.text = element.UserName;
+                CreatedLogins.appendChild(option);
+            });
+        }
+        function EditUser(){
+            
+
+        }
+        function AddUser(){
+            let AddTextUsers = document.getElementById("AddTextUsers");
+            let AddTextUsersInput = AddTextUsers.value;
+            
+        }
+        function DeleteUser(){
+            let DeleteTextUsers = document.getElementById("CreatedUsers");
+            let DeleteUser = DeleteTextUsers.options[DeleteTextUsers.selectedIndex].text;
+            
+        }
+        function startUp(){
+            CreateUserList();
+            CreateBooksList();
+            CreateLoginsList();
+        }
+        function addBook(){
+            let addBookElem = document.getElementById("AddTextBooks");
+            let bookName = addBookElem.value;
+
+            let responseObj = {
+                type:"createBook",
+                Name: bookName
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+        function addUser(){
+            let addUserElem = document.getElementById("AddTextUsers");
+            let userName = addUserElem.value;
+
+            let responseObj = {
+                type:"createUser",
+                Name: userName
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+        function addLogin(){
+            let addNameElem = document.getElementById("AddTextLoginsUsername");
+            let addPassElem = document.getElementById("AddTextLoginsPassword")
+            let usrname = addNameElem.value;
+            let passwrd = addPassElem.value;
+
+            let responseObj = {
+                type:"createLogin",
+                Name: usrname,
+                Password: passwrd
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+
+        ///Delete
+        function deleteUser(){
+            let delNameElem = document.getElementById("CreatedUsers");
+            let idInp = delNameElem.value;
+
+            let responseObj = {
+                type:"deleteUser",
+                id : idInp
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+        function deleteBooks(){
+            let delBookElem = document.getElementById("CreatedBooks");
+            let idInp = delBookElem.value;
+
+            let responseObj = {
+                type:"deleteBooks",
+                id : idInp
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+        function deleteLogin(){
+            let delLoginElem = document.getElementById("CreatedLogins");
+            let idInp = delLoginElem.value;
+
+            let responseObj = {
+                type:"deleteLogin",
+                id : idInp
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+        //update
+        function editBooks(){
+            let editIdEl = document.getElementById("CreatedBooks");
+            let idInp = editIdEl.value;
+
+            let loanToggleElem = document.getElementById("EditBooksLoaned");
+            let loanVal = loanToggleElem.value;
+
+            let editBookElem = document.getElementById("EditTextBooks");
+            let bookName = editBookElem.value;
+
+            let responseObj = {
+                type:"editBook",
+                id : idInp,
+                loan : loanVal,
+                name : bookName
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+        function editUser(){
+            let editIdEl = document.getElementById("CreatedUsers");
+            let idInp = editIdEl.value;
+
+            let edituserElem = document.getElementById("EditTextUsers");
+            let userName = edituserElem.value;
+
+            let responseObj = {
+                type:"editUser",
+                id : idInp,
+                name : userName
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+
+        function editLogin(){
+            let editIdEl = document.getElementById("CreatedLogins");
+            let idInp = editIdEl.value;
+
+            let editusernameElem = document.getElementById("EditTextLoginsUsername");
+            let userName = editusernameElem.value;
+
+            let editpasswordElem = document.getElementById("EditTextLoginsPassword");
+            let passWord = editpasswordElem.value;
+
+            let responseObj = {
+                type:"editLogin",
+                id : idInp,
+                name : userName,
+                password : passWord
+            }
+
+            let stringify = JSON.stringify(responseObj);
+            socket.send(stringify);
+        }
+        
+
+        
     </script>
 </head>
-<body>
+<body onload="startUp()">
     <div id="Login">
     <h1>Login</h1>
     <label>Username</label>
@@ -79,34 +296,40 @@
     </div>
 
     <div id="Admin" style="visibility: hidden; display: none;">
-        <h1>Admin</h1>
+        <h1>Admin Page</h1>
         <label>Library Users: </label>
         <select id="CreatedUsers">
 
         </select>
         <br><br>
         <input type="text" id="EditTextUsers">
-        <button id="EditUsers">Edit</button>
+        <button id="EditUsers" onclick="editUser()">Edit</button>
         <br><br>
         <input type="text" id="AddTextUsers">
-        <button id="AddUsers">Add</button>
+        <button id="AddUsers" onclick="addUser()">Add</button>
         <br><br>
-        <button id="DeleteUsers">Delete</button>
+        <button id="DeleteUsers" onclick="deleteUser()">Delete</button>
         <br><br>
 
         <label>Books: </label>
+        
         <select id="CreatedBooks">
 
         </select>
         <br><br>
         <input type="text" id="EditTextBooks">
-        <button id="EditBooks">Edit</button>
+        <label>Loaned: </label>
+        <input type="checkbox" id="EditBooksLoaned">
+        <button id="EditBooks" onclick="editBooks()">Edit</button>
         <br><br>
         <input type="text" id="AddTextBooks">
-        <button id="AddBooks">Add</button>
+        <button id="AddBooks" onclick="addBook()">Add</button>
+
         <br><br>
-        <button id="DeleteBooks">Delete</button>
+        <button id="DeleteBooks" onclick="deleteBooks()">Delete</button>
         <br><br>
+
+
 
         <label>Logins: </label>
         <select id="CreatedLogins">
@@ -115,13 +338,13 @@
         <br><br>
         <input type="text" id="EditTextLoginsUsername">
         <input type="text" id="EditTextLoginsPassword">
-        <button id="EditLogins">Edit</button>
+        <button id="EditLogins" onclick="editLogin()">Edit</button>
         <br><br>
         <input type="text" id="AddTextLoginsUsername">
         <input type="text" id="AddTextLoginsPassword">
-        <button id="AddLogins">Add</button>
+        <button id="AddLogins" onclick="addLogin()">Add</button>
         <br><br>
-        <button id="DeleteLogins">Delete</button>
+        <button id="DeleteLogins" onclick="deleteLogin()">Delete</button>
         <br><br>
 
     </div>

@@ -8,13 +8,13 @@ chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 suite("A suite", function() {
     test("A test", function() {
-       // Test code here…
+       
     });
     test("B test", function() {
-        // Test code here…
+        
      });
      test("C test", function() {
-        // Test code here…
+        
      });
      suiteTeardown(function(){
         server.closeServer();

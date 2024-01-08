@@ -4,9 +4,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 let mongoose = require("mongoose");
 let mongourl = "mongodb+srv://stephenmartincockerham:WjHedC3BGqTCbQsO@cluster0.kgj3hbh.mongodb.net/Library?retryWrites=true&w=majority";
 // Define a Schema
-let bookSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, BookName: String});
-let userSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, UserName: String});
-let loginSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, UserName: String, Password: String});
+let bookSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, BookName: String, Loaned: Boolean},{ versionKey: false });
+let userSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, UserName: String},{ versionKey: false });
+let loginSchema = new mongoose.Schema({_id: mongoose.Schema.ObjectId, UserName: String, Password: String},{ versionKey: false });
 // Define a Model
 let bookModel = mongoose.model("books", bookSchema);
 let userModel = mongoose.model("users", userSchema);
@@ -32,8 +32,10 @@ async function getBooks(){
     console.log(bookCollection);
     return bookCollection;
 }
+
+
 async function getUsers(){
-    bookModel = mongoose.model("users", userSchema);
+    userModel = mongoose.model("users", userSchema);
     userCollection = await userModel.find();
     console.log(userCollection);
     return userCollection;
@@ -43,6 +45,86 @@ async function getLogins(){
     loginCollection = await loginModel.find();
     console.log(loginCollection);
     return loginCollection;
+}
+
+
+//Creates
+async function createBook(bookname, loanedInp){
+
+    var book = {
+        _id: new ObjectId(),
+        BookName : bookname,
+        Loaned : loanedInp
+    }
+    let response = await bookModel.create(book);
+    console.log("create Book Response: " + response);
+}
+async function createUser(username){
+
+    var user = {
+        _id: new ObjectId(),
+        UserName : username
+    }
+    let response = await userModel.create(user);
+    console.log("create User Response: " + response);
+}
+async function createLogin(username, password){
+
+    var login = {
+        _id: new ObjectId(),
+        UserName : username,
+        Password : password
+    }
+    let response = await loginModel.create(login);
+    console.log("create Login Response: " + response);
+}
+
+async function deleteBook(id){
+    let response = await bookModel.findByIdAndDelete(id);
+    console.log(response);
+    getBooks();
+}
+async function deleteUser(id){
+    let response = await userModel.findByIdAndDelete(id);
+    console.log(response);
+    getUsers();
+}
+async function deleteLogin(id){
+    let response = await loginModel.findByIdAndDelete(id);
+    console.log(response);
+    getLogins();
+}
+
+async function editUser(id, name){
+    let updateObj={
+        UserName : name
+    }
+    let response = await userModel.findByIdAndUpdate(id, updateObj)
+    console.log(response);
+}
+async function editLogin(id, name, password){
+    let updateObj={
+        UserName : name,
+        Password : password
+    }
+    let response = await loginModel.findByIdAndUpdate(id, updateObj);
+    console.log(response);
+}
+async function editBook(id, name, loan){
+    console.log("loan -=----" + loan);
+    let loanTemp;
+    if(loan == "on"){
+        loanTemp = true;
+    }
+    else{
+        loanTemp = false;
+    }
+    let updateObj={
+        BookName : name,
+        Loaned : loanTemp
+    }
+    let response = await bookModel.findByIdAndUpdate(id, updateObj);
+    console.log(response);
 }
 
 //websockets
@@ -63,9 +145,19 @@ app.get('/', function(req, res) {
   app.get('/adminloggedin', function(req, res) {
     res.sendFile(path.join(__dirname, '/adminindex.html'));
   });
+  
+  app.get('/books', function(req, res) {
+    res.json(bookCollection);
+  });
+  app.get('/users', function(req, res) {
+    res.json(userCollection);
+  });
+  app.get('/logins', function(req, res) {
+    res.json(loginCollection);
+  });
+
+
   app.listen(9000);
-
-
 // Initialise the socket server.
 const { WebSocketServer } = require('ws')
 const websocket = new WebSocketServer({ port:3000 })
@@ -89,6 +181,7 @@ websocket.on('connection', ws => {
     })
     ws.onmessage = function(event){
         parseData = JSON.parse(event.data);
+        console.log("parsed Data @" + event.data)
 
         if(parseData.type == "login"){
             console.log(parseData);
@@ -134,13 +227,40 @@ websocket.on('connection', ws => {
             console.log("logging " + parseData.username);
             connectedUsers.push(parseData.username);
         }
+        else if(parseData.type == "createBook"){
+            createBook(parseData.Name, false);
+        }
+        else if(parseData.type == "createUser"){
+            createUser(parseData.Name);
+        }
+        else if(parseData.type == "createLogin"){
+            createLogin(parseData.Name, parseData.Password);
+        }
+        else if(parseData.type == "deleteBooks"){
+            deleteBook(parseData.id);
+        }
+        else if(parseData.type == "deleteLogin"){
+            deleteLogin(parseData.id);
+        }
+        else if(parseData.type == "deleteUser"){
+            deleteUser(parseData.id);
+        }
+        else if(parseData.type == "editUser"){
+            editUser(parseData.id, parseData.name);
+        }
+        else if(parseData.type == "editLogin"){
+            editLogin(parseData.id, parseData.name, parseData.password);
+        }
+        else if(parseData.type == "editBook"){
+            editBook(parseData.id, parseData.name, parseData.loan);
+        }
     }
 })
-module.exports.app = app;
-module.exports.closeServer = closeServer;
 function closeServer(){
     websocket.close();
     server.close(()=>{
         process.exit(0);
     })
 }
+module.exports.app = app;
+module.exports.closeServer = closeServer;
