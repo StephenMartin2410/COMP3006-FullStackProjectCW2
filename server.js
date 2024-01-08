@@ -136,6 +136,8 @@ websocket.on('connection', ws => {
         }
     }
 })
+module.exports.app = app;
+module.exports.closeServer = closeServer;
 function closeServer(){
     websocket.close();
     server.close(()=>{
